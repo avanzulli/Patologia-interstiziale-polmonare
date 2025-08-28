@@ -44,7 +44,7 @@
 <body>
   <header>
     <h1>Assistant Diagnosi Radiologica ILD</h1>
-    <p>Supporto decisionale per la malattia interstiziale polmonare (UIP, HP, CTD‑ILD, CPFE, PPF). Non sostituisce la MDD.</p>
+    <p>Supporto decisionale per la malattia interstiziale polmonare (UIP pattern, HP, CTD‑ILD, CPFE, PPF). Non sostituisce la MDD.</p>
   </header>
   <div class="container">
     <div class="grid">
@@ -142,7 +142,7 @@
             <h2 style="margin:0 0 10px">Classificazione</h2>
             <div class="pills">
               <div class="pill tone-good"><b>Fibrosi:</b> <span id="fibrosisLabel">No evidenza certa</span></div>
-              <div class="pill tone-info"><b>UIP-centrico:</b> <span id="uipCategory">—</span></div>
+              <div class="pill tone-info"><b>UIP pattern:</b> <span id="uipCategory">—</span></div>
               <div class="pill tone-warn"><b>HP:</b> <span id="hpAssessment">—</span></div>
               <div class="pill tone-warn"><b>CTD-ILD:</b> <span id="ctdVariant">—</span></div>
               <div class="pill tone-neutral"><b>CPFE:</b> <span id="cpfe">No</span></div>
@@ -292,7 +292,7 @@
       "TC torace HR eseguita con acquisizioni volumetriche a strato ≤1.5 mm, kernel a moderato edge‑enhancement, ricostruzioni multiplanari. Valutazione su inspirio in respiro unico.",
       distribuzione ? `Distribuzione delle alterazioni: ${distribuzione}.` : "",
       hasFibrosis() ? `Segni di fibrosi: ${fibrosiElenco || "presenti"}.` : "Assenza di segni certi di fibrosi.",
-      `Classificazione UIP‑centrica: ${uipCategory()}.`,
+      `Classificazione UIP pattern: ${uipCategory()}.`,
       alternative ? `Elementi a favore di diagnosi alternativa: ${alternative}.` : "",
       hpAssessment() !== "—" ? `Valutazione per ipersensibilità: ${hpAssessment()}.` : "",
       asbestosis() !== "—" ? asbestosis() + "." : "",
@@ -315,9 +315,7 @@
     out.report.value = buildReport();
   }
 
-  ids.forEach(id => {
-    if (el[id]) el[id].addEventListener("change", recompute);
-  });
+  ids.forEach(id => { const e = document.getElementById(id); if (e) e.addEventListener("change", recompute); });
   recompute();
 
   document.getElementById("copyBtn").addEventListener("click", async () => {
