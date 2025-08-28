@@ -17,13 +17,11 @@
   .card { background:var(--card); border:1px solid var(--border); border-radius:16px; padding:16px; box-shadow: 0 1px 2px rgba(0,0,0,0.04); }
   .section { margin-bottom:14px; }
   .section h2 { font-size:18px; margin:0 0 6px; font-weight:700; }
-  .section .subtitle { color:var(--muted); font-size: 12px; margin-bottom: 6px; }
   .grid2 { display:grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap:10px; }
   .grid3 { display:grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap:10px; }
   .toggle { display:flex; gap:10px; align-items:flex-start; padding:10px; border:1px solid var(--border); border-radius:12px; background:#fff; cursor:pointer; }
   .toggle input { margin-top:2px; width:16px; height:16px; }
   .toggle .label { font-weight:600; line-height:1.2; }
-  .toggle .hint { color:var(--muted); font-size:12px; margin-top:3px; }
   .divider { height:1px; background:var(--border); margin:14px 0; }
   .sticky { position: sticky; top: 16px; }
   .pills { display:flex; flex-direction: column; gap:8px; }
@@ -100,6 +98,9 @@
               <label class="toggle"><input id="airTrapping" type="checkbox"><div><div class="label">Air trapping espiratorio</div></div></label>
               <label class="toggle"><input id="threeDensity" type="checkbox"><div><div class="label">Segno delle tre densità</div></div></label>
               <label class="toggle"><input id="smallAirwaysDisease" type="checkbox"><div><div class="label">Danno delle piccole vie aeree (complessivo)</div></div></label>
+              <label class="toggle"><input id="perilymphNodules" type="checkbox"><div><div class="label">Noduli perilinfatici/peribroncovascolari diffusi</div></div></label>
+              <label class="toggle"><input id="bronchovascularThickening" type="checkbox"><div><div class="label">Addensamento/fasci peribroncovascolari</div></div></label>
+              <label class="toggle"><input id="septalThickening" type="checkbox"><div><div class="label">Ispessimento interlobulare</div></div></label>
             </div>
           </div>
 
@@ -122,6 +123,7 @@
               <label class="toggle"><input id="anteriorUpperLobe" type="checkbox"><div><div class="label">Anterior upper lobe sign</div></div></label>
               <label class="toggle"><input id="fourCorners" type="checkbox"><div><div class="label">Four corners sign</div></div></label>
               <label class="toggle"><input id="exuberantHoneycombing" type="checkbox"><div><div class="label">Honeycombing exuberante (&gt;70% del polmone fibrotico)</div></div></label>
+              <label class="toggle"><input id="hilarMediastinalLAN" type="checkbox"><div><div class="label">Adenopatie ilari/mediastiniche</div></div></label>
             </div>
           </div>
 
@@ -147,6 +149,7 @@
               <div class="pill tone-warn"><b>CTD-ILD:</b> <span id="ctdVariant">—</span></div>
               <div class="pill tone-neutral"><b>CPFE:</b> <span id="cpfe">No</span></div>
               <div class="pill tone-neutral"><b>Asbestosi:</b> <span id="asbestosis">—</span></div>
+              <div class="pill tone-warn"><b>Sarcoidosi:</b> <span id="sarcoid">—</span></div>
               <div class="pill tone-bad"><b>PPF:</b> <span id="ppfFlag">PPF non documentata (richiede follow-up)</span></div>
             </div>
           </div>
@@ -183,9 +186,9 @@
   const ids = [
     "subpleural","basal","diffuse","peribronchovascular","upperMidPred","subpleuralSparing",
     "reticulation","traction","honeycombing","archDistortion","volLoss",
-    "ggoMild","ggoExtensive","consolidationDominant","clnProfuse","cystsDominant","mosaic","airTrapping","threeDensity","smallAirwaysDisease",
+    "ggoMild","ggoExtensive","consolidationDominant","clnProfuse","cystsDominant","mosaic","airTrapping","threeDensity","smallAirwaysDisease","perilymphNodules","bronchovascularThickening","septalThickening",
     "emphysemaCL","emphysemaPS",
-    "pleuralPlaques","esophagealDilation","pulmHTN","rheumatoidNodules","straightEdge","anteriorUpperLobe","fourCorners","exuberantHoneycombing",
+    "pleuralPlaques","esophagealDilation","pulmHTN","rheumatoidNodules","straightEdge","anteriorUpperLobe","fourCorners","exuberantHoneycombing","hilarMediastinalLAN",
     "symptomsWorse","pftDecline","ctProgression",
     "smoker","knownCTD","exposureAntigen","asbestosExposure"
   ];
@@ -197,6 +200,7 @@
     ctdVariant: document.getElementById("ctdVariant"),
     cpfe: document.getElementById("cpfe"),
     asbestosis: document.getElementById("asbestosis"),
+    sarcoid: document.getElementById("sarcoid"),
     ppfFlag: document.getElementById("ppfFlag"),
     report: document.getElementById("report"),
   };
@@ -222,6 +226,9 @@
     airTrapping: "Air trapping espiratorio",
     threeDensity: "Segno delle tre densità",
     smallAirwaysDisease: "Danno delle piccole vie aeree (complessivo)",
+    perilymphNodules: "Noduli perilinfatici/peribroncovascolari diffusi",
+    bronchovascularThickening: "Addensamento/fasci peribroncovascolari",
+    septalThickening: "Ispessimento interlobulare",
     emphysemaCL: "Enfisema centrolobulare",
     emphysemaPS: "Enfisema paraseptale/bulloso",
     pleuralPlaques: "Placche pleuriche",
@@ -232,6 +239,7 @@
     anteriorUpperLobe: "Anterior upper lobe sign",
     fourCorners: "Four corners sign",
     exuberantHoneycombing: "Honeycombing exuberante (>70% del polmone fibrotico)",
+    hilarMediastinalLAN: "Adenopatie ilari/mediastiniche",
   };
 
   function getChecked(k){ return el[k] && el[k].checked; }
@@ -277,6 +285,19 @@
     const n = [getChecked("symptomsWorse"), getChecked("pftDecline"), getChecked("ctProgression")].filter(Boolean).length;
     return n >= 2 ? "PPF presente (≥2 criteri nell’ultimo anno)" : "PPF non documentata (richiede follow-up)";
   }
+  function sarcoidAssessment(){
+    const upperOrPeribv = getChecked("upperMidPred") || getChecked("peribronchovascular");
+    const nodularComplex = getChecked("perilymphNodules") || getChecked("clnProfuse") || getChecked("bronchovascularThickening") || getChecked("septalThickening");
+    const lan = getChecked("hilarMediastinalLAN");
+    const fibrotic = getChecked("traction") || getChecked("archDistortion") || getChecked("honeycombing") || getChecked("cystsDominant");
+    if (upperOrPeribv && nodularComplex && lan) {
+      return fibrotic ? "Compatibile con fibrosi sarcoidosica" : "Compatibile con sarcoidosi";
+    }
+    if (upperOrPeribv && (nodularComplex || lan)) {
+      return fibrotic ? "Possibile fibrosi sarcoidosica" : "Possibile sarcoidosi";
+    }
+    return "—";
+  }
   function listSelected(keys){
     return keys.filter(k => getChecked(k)).map(k => labels[k]).join(", ");
   }
@@ -295,6 +316,7 @@
       `Classificazione UIP pattern: ${uipCategory()}.`,
       alternative ? `Elementi a favore di diagnosi alternativa: ${alternative}.` : "",
       hpAssessment() !== "—" ? `Valutazione per ipersensibilità: ${hpAssessment()}.` : "",
+      sarcoidAssessment() !== "—" ? `Diagnosi differenziale: ${sarcoidAssessment()}.` : "",
       asbestosis() !== "—" ? asbestosis() + "." : "",
       ctdVariant() !== "—" ? `${ctdVariant()}${ctdVariantList ? ` (Segni: ${ctdVariantList}).` : "."}` : "",
       `${cpfeText}`,
@@ -311,6 +333,7 @@
     out.ctdVariant.textContent = ctdVariant();
     out.cpfe.textContent = cpfe();
     out.asbestosis.textContent = asbestosis();
+    out.sarcoid.textContent = sarcoidAssessment();
     out.ppfFlag.textContent = ppfFlag();
     out.report.value = buildReport();
   }
