@@ -1,0 +1,335 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Assistant Diagnosi ILD — Radiologia</title>
+<style>
+  :root { --bg:#f8fbff; --card:#ffffff; --text:#111827; --muted:#6b7280; --border:#e5e7eb; --accent:#0369a1; }
+  * { box-sizing: border-box; }
+  body { margin:0; font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial; color:var(--text); background:linear-gradient(180deg,#eff6ff, #fff); }
+  header { padding:24px 20px 8px; }
+  header h1 { margin:0; font-size: clamp(22px, 3vw, 28px); font-weight: 800; }
+  header p { margin:6px 0 0; color:var(--muted); }
+  .container { max-width: 1200px; margin: 0 auto; padding: 12px 20px 28px; }
+  .grid { display:grid; grid-template-columns: 2fr 1fr; gap:20px; }
+  @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } .sticky { position: static; } }
+  .card { background:var(--card); border:1px solid var(--border); border-radius:16px; padding:16px; box-shadow: 0 1px 2px rgba(0,0,0,0.04); }
+  .section { margin-bottom:14px; }
+  .section h2 { font-size:18px; margin:0 0 6px; font-weight:700; }
+  .section .subtitle { color:var(--muted); font-size: 12px; margin-bottom: 6px; }
+  .grid2 { display:grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap:10px; }
+  .grid3 { display:grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap:10px; }
+  .toggle { display:flex; gap:10px; align-items:flex-start; padding:10px; border:1px solid var(--border); border-radius:12px; background:#fff; cursor:pointer; }
+  .toggle input { margin-top:2px; width:16px; height:16px; }
+  .toggle .label { font-weight:600; line-height:1.2; }
+  .toggle .hint { color:var(--muted); font-size:12px; margin-top:3px; }
+  .divider { height:1px; background:var(--border); margin:14px 0; }
+  .sticky { position: sticky; top: 16px; }
+  .pills { display:flex; flex-direction: column; gap:8px; }
+  .pill { border:1px solid; border-radius:12px; padding:8px 10px; font-size: 14px; }
+  .tone-info { background:#eff6ff; color:#1e3a8a; border-color:#bfdbfe; }
+  .tone-warn { background:#fffbeb; color:#78350f; border-color:#fde68a; }
+  .tone-good { background:#ecfdf5; color:#064e3b; border-color:#a7f3d0; }
+  .tone-bad  { background:#fef2f2; color:#7f1d1d; border-color:#fecaca; }
+  .tone-neutral { background:#f9fafb; color:#111827; border-color:#e5e7eb; }
+  textarea { width:100%; min-height:260px; resize:vertical; font-size: 13px; line-height:1.35; padding:10px; border:1px solid var(--border); border-radius:12px; }
+  .btn { background:var(--accent); color:#fff; border:none; border-radius:10px; padding:8px 12px; font-weight:600; cursor:pointer; }
+  .btn:hover { filter: brightness(0.95); }
+  ul { padding-left: 18px; }
+  footer { color:var(--muted); font-size:12px; margin-top:16px; }
+  input[type="text"] { width:100%; border:1px solid var(--border); border-radius:8px; padding:8px; font-size:14px; }
+</style>
+</head>
+<body>
+  <header>
+    <h1>Assistant Diagnosi Radiologica ILD</h1>
+    <p>Supporto decisionale per la malattia interstiziale polmonare (UIP, HP, CTD‑ILD, CPFE, PPF). Non sostituisce la MDD.</p>
+  </header>
+  <div class="container">
+    <div class="grid">
+      <div>
+        <div class="card">
+          <div class="section">
+            <h2>Dati sintetici (opzionali)</h2>
+            <div class="grid2">
+              <div><input id="age" type="text" placeholder="Età"></div>
+              <div><input id="sex" type="text" placeholder="Sesso"></div>
+            </div>
+            <div class="grid3" style="margin-top:10px">
+              <label class="toggle"><input id="smoker" type="checkbox"><div><div class="label">Fumatore</div></div></label>
+              <label class="toggle"><input id="knownCTD" type="checkbox"><div><div class="label">Connettivite nota</div></div></label>
+              <label class="toggle"><input id="exposureAntigen" type="checkbox"><div><div class="label">Esposizione ad antigeni</div></div></label>
+              <label class="toggle"><input id="asbestosExposure" type="checkbox"><div><div class="label">Esposizione ad asbesto</div></div></label>
+            </div>
+          </div>
+          <div class="divider"></div>
+
+          <div class="section">
+            <h2>Distribuzione delle anomalie</h2>
+            <div class="grid2">
+              <label class="toggle"><input id="subpleural" type="checkbox"><div><div class="label">Distribuzione subpleurica</div></div></label>
+              <label class="toggle"><input id="basal" type="checkbox"><div><div class="label">Prevalenza basale</div></div></label>
+              <label class="toggle"><input id="diffuse" type="checkbox"><div><div class="label">Distribuzione diffusa</div></div></label>
+              <label class="toggle"><input id="peribronchovascular" type="checkbox"><div><div class="label">Prevalenza peribroncovascolare</div></div></label>
+              <label class="toggle"><input id="upperMidPred" type="checkbox"><div><div class="label">Prevalenza lobi superiori/medi</div></div></label>
+              <label class="toggle"><input id="subpleuralSparing" type="checkbox"><div><div class="label">Risparmio subpleurico</div></div></label>
+            </div>
+          </div>
+
+          <div class="section">
+            <h2>Segni di fibrosi</h2>
+            <div class="grid2">
+              <label class="toggle"><input id="reticulation" type="checkbox"><div><div class="label">Reticolazione</div></div></label>
+              <label class="toggle"><input id="traction" type="checkbox"><div><div class="label">Bronchiectasie/bronchioloectasie da trazione</div></div></label>
+              <label class="toggle"><input id="honeycombing" type="checkbox"><div><div class="label">Honeycombing</div></div></label>
+              <label class="toggle"><input id="archDistortion" type="checkbox"><div><div class="label">Distorsione architetturale</div></div></label>
+              <label class="toggle"><input id="volLoss" type="checkbox"><div><div class="label">Perdita di volume</div></div></label>
+            </div>
+          </div>
+
+          <div class="section">
+            <h2>Opacità / Piccole vie aeree</h2>
+            <div class="grid2">
+              <label class="toggle"><input id="ggoMild" type="checkbox"><div><div class="label">Aree a vetro smerigliato (lievi)</div></div></label>
+              <label class="toggle"><input id="ggoExtensive" type="checkbox"><div><div class="label">Aree a vetro smerigliato (estese)</div></div></label>
+              <label class="toggle"><input id="consolidationDominant" type="checkbox"><div><div class="label">Consolidazioni dominanti</div></div></label>
+              <label class="toggle"><input id="clnProfuse" type="checkbox"><div><div class="label">Noduli centrolobulari diffusi/profusi</div></div></label>
+              <label class="toggle"><input id="cystsDominant" type="checkbox"><div><div class="label">Cisti dominanti</div></div></label>
+              <label class="toggle"><input id="mosaic" type="checkbox"><div><div class="label">Mosaico attenuativo</div></div></label>
+              <label class="toggle"><input id="airTrapping" type="checkbox"><div><div class="label">Air trapping espiratorio</div></div></label>
+              <label class="toggle"><input id="threeDensity" type="checkbox"><div><div class="label">Segno delle tre densità</div></div></label>
+              <label class="toggle"><input id="smallAirwaysDisease" type="checkbox"><div><div class="label">Danno delle piccole vie aeree (complessivo)</div></div></label>
+            </div>
+          </div>
+
+          <div class="section">
+            <h2>Enfisema</h2>
+            <div class="grid2">
+              <label class="toggle"><input id="emphysemaCL" type="checkbox"><div><div class="label">Enfisema centrolobulare</div></div></label>
+              <label class="toggle"><input id="emphysemaPS" type="checkbox"><div><div class="label">Enfisema paraseptale/bulloso</div></div></label>
+            </div>
+          </div>
+
+          <div class="section">
+            <h2>Segni ancillari / varianti (CTD‑ILD, esposizioni)</h2>
+            <div class="grid2">
+              <label class="toggle"><input id="pleuralPlaques" type="checkbox"><div><div class="label">Placche pleuriche</div></div></label>
+              <label class="toggle"><input id="esophagealDilation" type="checkbox"><div><div class="label">Dilatazione esofagea</div></div></label>
+              <label class="toggle"><input id="pulmHTN" type="checkbox"><div><div class="label">Ipertensione polmonare</div></div></label>
+              <label class="toggle"><input id="rheumatoidNodules" type="checkbox"><div><div class="label">Noduli necrobiotici (AR)</div></div></label>
+              <label class="toggle"><input id="straightEdge" type="checkbox"><div><div class="label">Straight‑edge sign</div></div></label>
+              <label class="toggle"><input id="anteriorUpperLobe" type="checkbox"><div><div class="label">Anterior upper lobe sign</div></div></label>
+              <label class="toggle"><input id="fourCorners" type="checkbox"><div><div class="label">Four corners sign</div></div></label>
+              <label class="toggle"><input id="exuberantHoneycombing" type="checkbox"><div><div class="label">Honeycombing exuberante (&gt;70% del polmone fibrotico)</div></div></label>
+            </div>
+          </div>
+
+          <div class="section">
+            <h2>PPF — Progressione (ultimi 12 mesi)</h2>
+            <div class="grid3">
+              <label class="toggle"><input id="symptomsWorse" type="checkbox"><div><div class="label">Peggioramento sintomi</div></div></label>
+              <label class="toggle"><input id="pftDecline" type="checkbox"><div><div class="label">Declino funzionale (PFT)</div></div></label>
+              <label class="toggle"><input id="ctProgression" type="checkbox"><div><div class="label">Progressione radiologica</div></div></label>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <div class="sticky">
+          <div class="card">
+            <h2 style="margin:0 0 10px">Classificazione</h2>
+            <div class="pills">
+              <div class="pill tone-good"><b>Fibrosi:</b> <span id="fibrosisLabel">No evidenza certa</span></div>
+              <div class="pill tone-info"><b>UIP-centrico:</b> <span id="uipCategory">—</span></div>
+              <div class="pill tone-warn"><b>HP:</b> <span id="hpAssessment">—</span></div>
+              <div class="pill tone-warn"><b>CTD-ILD:</b> <span id="ctdVariant">—</span></div>
+              <div class="pill tone-neutral"><b>CPFE:</b> <span id="cpfe">No</span></div>
+              <div class="pill tone-neutral"><b>Asbestosi:</b> <span id="asbestosis">—</span></div>
+              <div class="pill tone-bad"><b>PPF:</b> <span id="ppfFlag">PPF non documentata (richiede follow-up)</span></div>
+            </div>
+          </div>
+
+          <div class="card" style="margin-top:16px">
+            <h2 style="margin:0 0 10px">Report sintetico (IT)</h2>
+            <textarea id="report" readonly></textarea>
+            <div style="margin-top:8px; display:flex; gap:8px; align-items:center">
+              <button class="btn" id="copyBtn">Copia testo</button>
+              <small style="color:var(--muted)">Testo privo di bullet; pronto per integrazione in referti.</small>
+            </div>
+          </div>
+
+          <div class="card" style="margin-top:16px">
+            <h2 style="margin:0 4px 10px 0">Promemoria protocollo TC HR</h2>
+            <ul>
+              <li>Acquisizione volumetrica sottile: ≤ 1–1.5 mm; ricostruzioni multiplanari.</li>
+              <li>Kernel moderatamente edge‑enhancing; evitare oversmoothing con iterativa.</li>
+              <li>Inspirio in singolo respiro; espirio se sospetto small airways (air trapping/mosaico).</li>
+              <li>Valutare estensione di trazione, honeycombing, reticolazione, distribuzione.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <footer>
+      Strumento di supporto alla refertazione ILD: non sostituisce giudizio clinico né discussione multidisciplinare.
+    </footer>
+  </div>
+
+<script>
+(function(){
+  const ids = [
+    "subpleural","basal","diffuse","peribronchovascular","upperMidPred","subpleuralSparing",
+    "reticulation","traction","honeycombing","archDistortion","volLoss",
+    "ggoMild","ggoExtensive","consolidationDominant","clnProfuse","cystsDominant","mosaic","airTrapping","threeDensity","smallAirwaysDisease",
+    "emphysemaCL","emphysemaPS",
+    "pleuralPlaques","esophagealDilation","pulmHTN","rheumatoidNodules","straightEdge","anteriorUpperLobe","fourCorners","exuberantHoneycombing",
+    "symptomsWorse","pftDecline","ctProgression",
+    "smoker","knownCTD","exposureAntigen","asbestosExposure"
+  ];
+  const el = Object.fromEntries(ids.map(id => [id, document.getElementById(id)]));
+  const out = {
+    fibrosisLabel: document.getElementById("fibrosisLabel"),
+    uipCategory: document.getElementById("uipCategory"),
+    hpAssessment: document.getElementById("hpAssessment"),
+    ctdVariant: document.getElementById("ctdVariant"),
+    cpfe: document.getElementById("cpfe"),
+    asbestosis: document.getElementById("asbestosis"),
+    ppfFlag: document.getElementById("ppfFlag"),
+    report: document.getElementById("report"),
+  };
+
+  const labels = {
+    subpleural: "Distribuzione subpleurica",
+    basal: "Prevalenza basale",
+    diffuse: "Distribuzione diffusa",
+    peribronchovascular: "Prevalenza peribroncovascolare",
+    upperMidPred: "Prevalenza lobi superiori/medi",
+    subpleuralSparing: "Risparmio subpleurico",
+    reticulation: "Reticolazione",
+    traction: "Bronchiectasie/bronchioloectasie da trazione",
+    honeycombing: "Honeycombing",
+    archDistortion: "Distorsione architetturale",
+    volLoss: "Perdita di volume",
+    ggoMild: "Aree a vetro smerigliato (lievi)",
+    ggoExtensive: "Aree a vetro smerigliato (estese)",
+    consolidationDominant: "Consolidazioni dominanti",
+    clnProfuse: "Noduli centrolobulari diffusi/profusi",
+    cystsDominant: "Cisti dominanti",
+    mosaic: "Mosaico attenuativo",
+    airTrapping: "Air trapping espiratorio",
+    threeDensity: "Segno delle tre densità",
+    smallAirwaysDisease: "Danno delle piccole vie aeree (complessivo)",
+    emphysemaCL: "Enfisema centrolobulare",
+    emphysemaPS: "Enfisema paraseptale/bulloso",
+    pleuralPlaques: "Placche pleuriche",
+    esophagealDilation: "Dilatazione esofagea",
+    pulmHTN: "Ipertensione polmonare",
+    rheumatoidNodules: "Noduli necrobiotici (AR)",
+    straightEdge: "Straight-edge sign",
+    anteriorUpperLobe: "Anterior upper lobe sign",
+    fourCorners: "Four corners sign",
+    exuberantHoneycombing: "Honeycombing exuberante (>70% del polmone fibrotico)",
+  };
+
+  function getChecked(k){ return el[k] && el[k].checked; }
+  function hasFibrosis(){
+    return getChecked("honeycombing") || getChecked("traction") || getChecked("reticulation") || getChecked("archDistortion") || getChecked("volLoss");
+  }
+  function alternativeFeaturesPresent(){
+    return getChecked("subpleuralSparing") || getChecked("upperMidPred") || getChecked("peribronchovascular") || getChecked("cystsDominant") ||
+           getChecked("consolidationDominant") || getChecked("clnProfuse") || getChecked("mosaic") || getChecked("airTrapping") || getChecked("threeDensity");
+  }
+  function uipCategory(){
+    if (!hasFibrosis()) return "Pattern non fibrotico (valutare HP non fibrotica / ILA)";
+    if (getChecked("subpleural") && getChecked("basal") && getChecked("honeycombing") && !alternativeFeaturesPresent()) return "UIP tipico";
+    if (getChecked("subpleural") && getChecked("basal") && !getChecked("honeycombing") && getChecked("traction") && getChecked("reticulation") && !alternativeFeaturesPresent()) return "Probabile UIP";
+    if (!alternativeFeaturesPresent()) return "Indeterminato per UIP";
+    return "Caratteristiche suggestive di diagnosi alternativa";
+  }
+  function hpAssessment(){
+    const smallAirways = getChecked("smallAirwaysDisease") || getChecked("clnProfuse") || getChecked("mosaic") || getChecked("airTrapping") || getChecked("threeDensity");
+    if (hasFibrosis() && smallAirways){
+      if (getChecked("threeDensity") || ((getChecked("mosaic") || getChecked("airTrapping")) && getChecked("clnProfuse"))) return "HP fibrotica — tipico";
+      return "HP fibrotica — compatibile";
+    }
+    if (!hasFibrosis() && (getChecked("clnProfuse") || getChecked("mosaic") || getChecked("airTrapping"))){
+      if ((getChecked("mosaic") && getChecked("airTrapping") && getChecked("clnProfuse")) || getChecked("threeDensity")) return "HP non fibrotica — tipico";
+      return "HP non fibrotica — compatibile";
+    }
+    return "—";
+  }
+  function ctdVariant(){
+    const anyVariant = getChecked("straightEdge") || getChecked("anteriorUpperLobe") || getChecked("fourCorners") || getChecked("exuberantHoneycombing");
+    const ancillary = getChecked("esophagealDilation") || getChecked("rheumatoidNodules");
+    if (anyVariant || ancillary || getChecked("knownCTD")) return "Sospetta UIP secondaria/variante in ILD da connettivite";
+    return "—";
+  }
+  function cpfe(){
+    return hasFibrosis() && (getChecked("emphysemaCL") || getChecked("emphysemaPS")) ? "Sì (CPFE probabile)" : "No";
+  }
+  function asbestosis(){
+    return hasFibrosis() && (getChecked("pleuralPlaques") || getChecked("asbestosExposure")) ? "Pattern compatibile con asbestosi (UIP secondaria possibile)" : "—";
+  }
+  function ppfFlag(){
+    const n = [getChecked("symptomsWorse"), getChecked("pftDecline"), getChecked("ctProgression")].filter(Boolean).length;
+    return n >= 2 ? "PPF presente (≥2 criteri nell’ultimo anno)" : "PPF non documentata (richiede follow-up)";
+  }
+  function listSelected(keys){
+    return keys.filter(k => getChecked(k)).map(k => labels[k]).join(", ");
+  }
+
+  function buildReport(){
+    const fibrosiElenco = listSelected(["reticulation","traction","honeycombing","archDistortion","volLoss"]);
+    const distribuzione = listSelected(["subpleural","basal","diffuse","peribronchovascular","upperMidPred","subpleuralSparing"]);
+    const alternative = listSelected(["ggoExtensive","consolidationDominant","clnProfuse","cystsDominant","mosaic","airTrapping","threeDensity","pleuralPlaques"]);
+    const ctdVariantList = listSelected(["straightEdge","anteriorUpperLobe","fourCorners","exuberantHoneycombing","esophagealDilation","rheumatoidNodules"]);
+    const cpfeText = cpfe() === "Sì (CPFE probabile)" ? "Coesistenza di enfisema e fibrosi compatibile con CPFE." : "Assenza di criteri per CPFE.";
+
+    return [
+      "TC torace HR eseguita con acquisizioni volumetriche a strato ≤1.5 mm, kernel a moderato edge‑enhancement, ricostruzioni multiplanari. Valutazione su inspirio in respiro unico.",
+      distribuzione ? `Distribuzione delle alterazioni: ${distribuzione}.` : "",
+      hasFibrosis() ? `Segni di fibrosi: ${fibrosiElenco || "presenti"}.` : "Assenza di segni certi di fibrosi.",
+      `Classificazione UIP‑centrica: ${uipCategory()}.`,
+      alternative ? `Elementi a favore di diagnosi alternativa: ${alternative}.` : "",
+      hpAssessment() !== "—" ? `Valutazione per ipersensibilità: ${hpAssessment()}.` : "",
+      asbestosis() !== "—" ? asbestosis() + "." : "",
+      ctdVariant() !== "—" ? `${ctdVariant()}${ctdVariantList ? ` (Segni: ${ctdVariantList}).` : "."}` : "",
+      `${cpfeText}`,
+      `Progressione fibrotica: ${ppfFlag()}.`,
+      "Si raccomanda discussione multidisciplinare (MDD) integrando dati clinici, esposizionali, sierologici e funzionali. In caso di pattern indeterminato o diagnosi alternativa, considerare ulteriori approfondimenti (lavaggio broncoalveolare/biopsia ove indicato).",
+    ].filter(Boolean).join("\n");
+  }
+
+  function recompute(){
+    const hf = hasFibrosis();
+    out.fibrosisLabel.textContent = hf ? "Sì" : "No evidenza certa";
+    out.uipCategory.textContent = uipCategory();
+    out.hpAssessment.textContent = hpAssessment();
+    out.ctdVariant.textContent = ctdVariant();
+    out.cpfe.textContent = cpfe();
+    out.asbestosis.textContent = asbestosis();
+    out.ppfFlag.textContent = ppfFlag();
+    out.report.value = buildReport();
+  }
+
+  ids.forEach(id => {
+    if (el[id]) el[id].addEventListener("change", recompute);
+  });
+  recompute();
+
+  document.getElementById("copyBtn").addEventListener("click", async () => {
+    try {
+      await navigator.clipboard.writeText(out.report.value);
+      const btn = document.getElementById("copyBtn");
+      const prev = btn.textContent;
+      btn.textContent = "Copiato ✓";
+      setTimeout(() => (btn.textContent = prev), 1200);
+    } catch(e){ alert("Impossibile copiare automaticamente. Seleziona il testo e copia manualmente."); }
+  });
+})();
+</script>
+</body>
+</html>
